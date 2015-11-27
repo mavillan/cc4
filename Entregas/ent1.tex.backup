@@ -53,12 +53,8 @@ Inicialmente, se propone resolver las \emph{Burger's Equations} en 1D sin viscos
 \begin{flalign}
   \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} = 0
 \end{flalign}
-Se puede observar que esta es una versión simplificada de las SWE, en las cuales no se considera la ecuación de continuidad.
 
-El siguiente paso, consiste en resolver las SWE en 1D (solo se considerará el movimiento en el eje X), a modo de obtener una 
-aproximación para estudiar el comportamiento de las ecuaciones antes de avanzar al problema en 2D.
 
-Finalmente, se implementarán las SWE en 2D.
 
 \section{Dificultades}
 Se presentan aquí algunas de las dificultades que se conocen, y otras que eventualmente podrían aparecer en la implementación 
