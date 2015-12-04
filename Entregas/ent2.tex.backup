@@ -2,6 +2,7 @@
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
+\usepackage{graphicx}
 \usepackage{amsfonts,txfonts}
 \usepackage{mathrsfs}
 \usepackage[colorlinks, urlcolor=blue]{hyperref}
@@ -89,9 +90,23 @@ del proyecto.
     \begin{align*}
       \phi(x,\epsilon) = e^{-(\epsilon x)^2}
     \end{align*}
-
-
+    Donde $\epsilon$ corresponde al \textit{shape parameter} de la \textit{RBF}. En el futuro, se pretende reemplazar esta
+    función por funciones de soporte compacto, con el fin de generar sistemas \textit{sparse}.
     
+    Se realizó un experimento modelando el comportamiento de la ecuación para el estado inicial:
+    \begin{equation*}
+      u(x) = I_{x \in [7,12]}\frac{(7-x)(x-12)}{12}
+    \end{equation*} \\
+    \includegraphics[scale=0.6]{initialu.png} \\
+    La aproximación inicial utilizando \textit{RBF} fue la siguiente: \\
+    \includegraphics[scale=0.6]{rbfapp.png} \\
+    Resolviendo el sistema de ecuaciones, se hallaron las ecuaciones de evolución de los parámetros de la \textit{RBF} de la 
+    forma:
+    \begin{align*}
+      \gamma'(t) &= 0 \\
+      \epsilon'(t) &= 0 \\
+      \xi'(t) &= u
+    \end{align*}
 
 
 \vfill\hfill RN/MV/\LaTeXe
