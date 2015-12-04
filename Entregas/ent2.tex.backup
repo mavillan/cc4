@@ -2,7 +2,7 @@
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
-\usepackage{graphicx}
+\usepackage{graphicx,float}
 \usepackage{amsfonts,txfonts}
 \usepackage{mathrsfs}
 \usepackage[colorlinks, urlcolor=blue]{hyperref}
@@ -107,7 +107,40 @@ del proyecto.
       \epsilon'(t) &= 0 \\
       \xi'(t) &= u
     \end{align*}
-
+    Estas ecuaciones indican que las \textit{RBF} mantendrán su forma ($\gamma'(t) = \epsilon'(t) = 0$). Los cambios de forma
+    en el fluido ocurrirán debido a la superposición de las \textit{RBF} a medida que estas se muevan acorde a la última 
+    ecuación.
+    
+    Algunos resultados obtenidos para la evolución de la ecuación en el tiempo son los siguientes: \\
+    \begin{figure}[H]
+      \centering
+      \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6]{t1000.png}
+      \end{minipage}%
+      \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6]{t2000.png}
+      \end{minipage}
+    \end{figure}
+    \begin{figure}[H]
+      \centering
+      \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6]{t3000.png}
+      \end{minipage}%
+      \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6]{t4000.png}
+      \end{minipage}
+    \end{figure}
+    \begin{figure}[H]
+      \centering
+      \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6]{t5000.png}
+      \end{minipage}%
+    \end{figure}
 
 \vfill\hfill RN/MV/\LaTeXe
 \end{document}

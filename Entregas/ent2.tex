@@ -90,8 +90,8 @@ del proyecto.
     \begin{align*}
       \phi(x,\epsilon) = e^{-(\epsilon x)^2}
     \end{align*}
-    Donde $\epsilon$ corresponde al \textit{shape parameter} de la \textit{RBF}. En el futuro, se pretende reemplazar esta
-    función por funciones de soporte compacto, con el fin de generar sistemas \textit{sparse}.
+    Donde $\epsilon$ corresponde al inverso del \textit{shape parameter} de la \textit{RBF}. En el futuro, se pretende 
+    reemplazar esta función por funciones de soporte compacto, con el fin de generar sistemas \textit{sparse}.
     
     Se realizó un experimento modelando el comportamiento de la ecuación para el estado inicial:
     \begin{equation*}
@@ -141,6 +141,10 @@ del proyecto.
         \includegraphics[scale=0.6]{t5000.png}
       \end{minipage}%
     \end{figure}
-
+    Como se puede observar, el comportamiento modelado por la \textit{Burger's Equation} es bastante simple, consistiendo en un
+    movimiento de la perturbación inicial $u(x,0)$ acorde a su posición anterior. Algunos de los detalles que pudieron 
+    observarse en la simulación son la aparición de una perturbación más pequeña que parece moverse a menor velocidad que el
+    resto del sistema.
+    
 \vfill\hfill RN/MV/\LaTeXe
 \end{document}
