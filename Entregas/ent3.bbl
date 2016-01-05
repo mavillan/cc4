@@ -1,12 +1,12 @@
 \begin{thebibliography}{1}
 
+\bibitem{swp}
+H.~Lee and S.~Han, ``Solving the shallow water equations using 2{D} {SPH}
+  particles for interactive applications,'' {\em Vis Comput}, vol.~26,
+  pp.~865--872, 2010.
+
 \bibitem{rossi}
 L.~F. Rossi, ``Achieving high-order convergence rates with feforming basis
   functions,'' {\em SIAM J. Sci. Comput.}, vol.~26, no.~3, pp.~885--906, 2005.
-
-\bibitem{swp}
-H.~Lee and S.~Han, ``Solving the shallow water equations using 2d {SPH}
-  particles for interactive applications,'' {\em Vis Comput}, vol.~26,
-  pp.~865--872, 2010.
 
 \end{thebibliography}
