@@ -65,7 +65,20 @@ que se pueda determinar la evolución del sistema, dadas las ecuaciones diferenc
 las condiciones iniciales y las condiciones de borde. Las SWE corresponden a un caso particular de las ecuaciones
 de Navier-Stokes, que se obtienen al hacer la suposición de que el fluido es incompresible y que no existe viscosidad, aunque esta última puede relajarse para obtener un sistema más realista. En el caso general (2D) las ecuaciones pueden
 escribirse como a continuación
-
+\DIFdelbegin \DIFdel{:
+}%DIFDELCMD < \begin{flalign}
+%DIFDELCMD <  & \frac{\partial u}{\partial t} + u \frac{\partial u}{\partial x} + v \frac{\partial u}{\partial y} + g \frac{\partial h}{\partial x} = 0 \\
+%DIFDELCMD <  & \frac{\partial v}{\partial t} + u \frac{\partial v}{\partial x} + v \frac{\partial v}{\partial y} + g \frac{\partial h}{\partial y} = 0 \\
+%DIFDELCMD <  & \frac{\partial h}{\partial t} + \frac{\partial }{\partial x}(u(h-b)) + \frac{\partial }{\partial y}(v(h-b)) = 0 
+%DIFDELCMD < \end{flalign}
+%DIFDELCMD < %%%
+\DIFdelend \DIFaddbegin \begin{align}
+\begin{split}
+ & \frac{\partial u}{\partial t} + u \frac{\partial u}{\partial x} + v \frac{\partial u}{\partial y} + g \frac{\partial h}{\partial x} = 0 \\
+ & \frac{\partial v}{\partial t} + u \frac{\partial v}{\partial x} + v \frac{\partial v}{\partial y} + g \frac{\partial h}{\partial y} = 0 \\
+ & \frac{\partial h}{\partial t} + \frac{\partial }{\partial x}(u(h-b)) + \frac{\partial }{\partial y}(v(h-b)) = 0
+\end{split}
+\end{align}
 \DIFaddend donde las variables de interés (a modelar) son $h(x,y,t)$ (nivel de agua), $u(x,y,t)$ (componente de velocidad de una columna de
 agua en $x$), $v(x,y,t)$ (componente de velocidad de una columna de agua en $y$). Adicionalmente deben ser conocidos $b(x,y)$\DIFaddbegin \DIFadd{, }\DIFaddend que corresponde a la \textit{batimetría} que describe la forma del fondo marino  y las condiciones de borde e iniciales del sistema.
 
@@ -79,13 +92,12 @@ agua en $x$), $v(x,y,t)$ (componente de velocidad de una columna de agua en $y$)
 Para la resolución del problema se plantea un enfoque del tipo partículas, \DIFaddbegin \DIFadd{similar a \textit{Shallow Water Particles} \cite{swp} }\DIFaddend donde la superficie del agua se modela por medio de \DIFdelbegin \DIFdel{un }\DIFdelend \DIFaddbegin \DIFadd{la distribución que tome este }\DIFaddend conjunto de partículas\DIFdelbegin \DIFdel{y por la forma en que se distribuyen. Para ser más precisos}\DIFdelend \DIFaddbegin \DIFadd{. En el enfoque aquí propuesto}\DIFaddend , cada una de las variables de interés ($h$, $u$ y $v$) se aproximan como una combinación lineal de funciones \DIFdelbegin \DIFdel{$RBF$. Para $h$, por ejemplo, se tiene:
 }%DIFDELCMD < 
 
-%DIFDELCMD < %%%
-\begin{displaymath}\DIFdel{h(x,y,t) = \sum_{i=0}^{N} \gamma_i(t)\Phi(||\mathbf{x}-\boldsymbol{\xi}_i(t)||, \epsilon_i(t))}\end{displaymath}
- %DIFAUXCMD
+%DIFDELCMD < $$h(x,y,t) = \sum_{i=0}^{N} \gamma_i(t)\Phi(||\mathbf{x}-\boldsymbol{\xi}_i(t)||, \epsilon_i(t))$$
+%DIFDELCMD <  %%%
 \DIFdelend \DIFaddbegin \DIFadd{RBF
-}\begin{align}\DIFadd{
+}\begin{align}
  \sum_{i=1}^{N} \gamma_i(t)\Phi(||\mathbf{x}-\boldsymbol{\xi}_i(t)||, \epsilon_i(t))    
-}\end{align}
+\end{align}
  \DIFaddend 
 
 \DIFaddbegin \noindent \DIFaddend donde la función RBF a ocupar es de preferencia una función de soporte compacto, de modo que se acote el radio de influencia de cada \DIFdelbegin \DIFdel{función}\DIFdelend \DIFaddbegin \DIFadd{partícula}\DIFaddend , y se generen de este modo sistemas \textit{sparse}.
@@ -96,15 +108,15 @@ La implementación de la solución espera ser incremental, abordando la compleji
 
 \begin{enumerate}
 \item Inicialmente se propone resolver las \emph{Burgers' Equations} en 1D sin viscosidad, definidas por:
-\DIFdelbegin \begin{displaymath}\DIFdel{
+\DIFdelbegin %DIFDELCMD < \begin{equation}
+%DIFDELCMD < \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} = 0
+%DIFDELCMD < \label{eq:burger}
+%DIFDELCMD < \end{equation}
+%DIFDELCMD < %%%
+\DIFdelend \DIFaddbegin \begin{align}
 \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} = 0
 \label{eq:burger}
-}\end{displaymath}
-%DIFAUXCMD
-\DIFdelend \DIFaddbegin \begin{align}\DIFadd{
-\frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} = 0
-\label{eq:burger}
-}\end{align}
+\end{align}
 \DIFaddend que es de interés pues es no lineal y \DIFdelbegin \DIFdel{que }\DIFdelend se deriva de un modelo de convección-difusión, por lo tanto muy similar a las SWE.
 
 \item El siguiente paso, consiste en resolver las SWE en 1D\DIFdelbegin \DIFdel{(solo se considerará el movimiento en el eje X)}\DIFdelend , a modo de obtener una idea de las propiedades y comportamiento de la solución propuesta\DIFaddbegin \DIFadd{, }\DIFaddend antes de avanzar a más dimensiones. Para este paso se pretende ocupar en primer lugar funciones \DIFdelbegin \DIFdel{RFB }\DIFdelend \DIFaddbegin \DIFadd{RBF }\DIFaddend gaussianas, para luego dar con alguna implementación con funciones de soporte compacto.
@@ -141,28 +153,32 @@ del proyecto.
 \addtocounter{subsubsection}{-1}%DIFAUXCMD
 \DIFdelend \DIFaddbegin \subsection{\DIFadd{Análisis Teórico}}
     \DIFaddend Para realizar una prueba preliminar antes de modelar las SWE, se procedió a resolver la Burgers' Equation (\ref{eq:burger}), una ecuación que \DIFdelbegin \DIFdel{permite modelar }\DIFdelend \DIFaddbegin \DIFadd{explica }\DIFaddend de manera simplificada el comportamiento de un fluido incompresible, por medio de las leyes de la conservación. Para realizar esto se define una solución $u(x,t)$ como una combinación lineal de \DIFdelbegin \DIFdel{RBF's}\DIFdelend \DIFaddbegin \DIFadd{RBFs}\DIFaddend , del siguiente modo
-    \begin{align}
-      u(x,t) = \sum_{i} \DIFdelbegin \DIFdel{\Phi_i}\DIFdelend \DIFaddbegin \DIFadd{\phi_{h_i}}\DIFaddend (x,t) = \sum_i \gamma_i(t)\phi\DIFdelbegin \DIFdel{_i}\DIFdelend \DIFaddbegin \DIFadd{_{h_i}}\DIFaddend (x-\xi_i(t),\epsilon_i)
+    \DIFdelbegin %DIFDELCMD < \begin{align}
+%DIFDELCMD <       u(x,t) = \sum_{i} \Phi_i(x,t) = \sum_i \gamma_i(t)\phi_i(x-\xi_i(t),\epsilon_i)
+%DIFDELCMD <     \end{align}
+%DIFDELCMD <     %%%
+\DIFdelend \DIFaddbegin \begin{align}
+      u(x,t) = \sum_{i} \phi_{h_i}(x,t) = \sum_i \gamma_i(t)\phi_{h_i}(x-\xi_i(t),\epsilon_i)
     \end{align}
+    \DIFaddend 
 
     \DIFdelbegin \DIFdel{Para realizar las pruebas iniciales se ocupa }\DIFdelend \DIFaddbegin \noindent \DIFadd{donde se utiliza }\DIFaddend $\displaystyle \phi(x,\epsilon) = e^{-(\epsilon x)^2}$. Siguiendo el enfoque \textit{evolutivo} se propone \DIFaddbegin \DIFadd{a cada }\DIFaddend $\Phi(x,t)$ (se omite \DIFdelbegin \DIFdel{subindice }\DIFdelend \DIFaddbegin \DIFadd{subíndice }\DIFaddend por simplicidad) como solución \DIFdelbegin \DIFdel{a }\DIFdelend \DIFaddbegin \DIFadd{de }\DIFaddend (\ref{eq:burger}), sin embargo para abordar el problema de la no linealidad, debe hacer una modificación al problema inicial. En vista de que se propone a $\Phi(x,t)$ como una solución a la PDE, es razonable aproximar $u(x,t)$ como una expansión de Taylor en torno a $(\xi(t),t)$ obteniendo
     \begin{align}
       u(x,t) = u(\xi(t),t) + \frac{u_x(\xi(t),t)}{1!}(x-\xi(t)) + \cdots
     \end{align}
     si tomamos sólo el primer término de esta expansión (de orden cero)\DIFdelbegin \DIFdel{entonces se obtiene la equación de burger simplificada:
-    }\begin{eqnarray*}\DIFdel{
-      \frac{\partial u}{\partial t} + u(\xi(t),t)\frac{\partial u}{\partial x} = 0
-      \label{eq:burgersimple}
-    }\end{eqnarray*}
-%DIFAUXCMD
+    }%DIFDELCMD < \begin{align}
+%DIFDELCMD <       \frac{\partial u}{\partial t} + u(\xi(t),t)\frac{\partial u}{\partial x} = 0
+%DIFDELCMD <       \label{eq:burgersimple}
+%DIFDELCMD <     \end{align}
 %DIFDELCMD < 
 
 %DIFDELCMD <     %%%
 \DIFdel{Luego si }\DIFdelend \DIFaddbegin \DIFadd{, y  }\DIFaddend se reemplaza la solución propuesta $\Phi(x,t)$\DIFaddbegin \DIFadd{, entonces se obtiene
-    }\begin{align}\DIFadd{
+    }\begin{align}
       \frac{\partial}{\partial t}\Phi(x-\xi(t),\epsilon(t)) + u(\xi(t),t)\ \frac{\partial}{\partial x}\Phi(x-\xi(t),\epsilon(t)) = 0
       \label{eq:burgersimple}
-    }\end{align}
+    \end{align}
 
     \noindent \DIFadd{luego realizando el álgebra necesaria }\DIFaddend en (\ref{eq:burgersimple})\DIFaddbegin \DIFadd{, }\DIFaddend se obtienen las siguientes ecuaciones de evolución para \DIFdelbegin \DIFdel{cada una de las }\DIFdelend \DIFaddbegin \DIFadd{los parámetros de cada }\DIFaddend RBF
     \begin{align*}
@@ -180,10 +196,9 @@ del proyecto.
 \addtocounter{subsubsection}{-1}%DIFAUXCMD
 \DIFdelend \DIFaddbegin \subsection{\DIFadd{Análisis experimental}}
     \DIFaddend Se realizó un experimento modelando el comportamiento de la ecuación para el estado inicial \DIFdelbegin \DIFdel{:
-    }\begin{displaymath}\DIFdel{
-      u(x) = I_{x \in [7,12]}\frac{(8-x)(x-12)}{12}
-    }\end{displaymath} %DIFAUXCMD
-%DIFDELCMD < \\
+    }%DIFDELCMD < \begin{equation*}
+%DIFDELCMD <       u(x) = I_{x \in [7,12]}\frac{(8-x)(x-12)}{12}
+%DIFDELCMD <     \end{equation*} \\
 %DIFDELCMD <     %%%
 \DIFdelend \DIFaddbegin \DIFadd{$u(x,0) = I_{x \in [8,12]}\frac{(8-x)(x-12)}{12}$ como se muestra a continuación
 }
@@ -247,18 +262,18 @@ del proyecto.
     \subsection{\DIFadd{Derivación en 1D}}
 
     \DIFadd{El sistema a resolver corresponde a la versión 1D de las SWE, tomando por simplicidad la restricción de que la batimetría es constante y cero $b(x)=0$, respecto al nivel de referencia. Así el sistema a trabaja es
-}\begin{align}\DIFadd{
- & \frac{\partial h}{\partial t} + h \frac{\partial u}{\partial x} + u \frac{\partial h}{\partial x} = 0 \label{eq:continuity}}\\
- & \DIFadd{\frac{\partial u}{\partial t} + u \frac{\partial u}{\partial x} + g \frac{\partial h}{\partial x} = 0 \label{eq:momentum}
-}\end{align}
+}\begin{align}
+ & \frac{\partial h}{\partial t} + h \frac{\partial u}{\partial x} + u \frac{\partial h}{\partial x} = 0 \label{eq:continuity}\\
+ & \frac{\partial u}{\partial t} + u \frac{\partial u}{\partial x} + g \frac{\partial h}{\partial x} = 0 \label{eq:momentum}
+\end{align}
 
     \DIFadd{Tal como se hizo anteriormente para la \textit{Burgers' Equation}, se proponen como solución al sistema anterior, las siguientes dos funciones respectivamente:
 }
 
-\begin{align}\DIFadd{
-     & h(x,t) = \sum_{i=1}^{N} \gamma_h(t)\phi(x-\xi_h(t),\epsilon_h(t)) + H_0 \label{eq:happ}}\\
-     & \DIFadd{u(x,t) = \sum_{i=1}^{N} \gamma_u(t)\phi(x-\xi_u(t),\epsilon_u(t)) + U_0 \label{eq:uapp}
- }\end{align}
+\begin{align}
+     & h(x,t) = \sum_{i=1}^{N} \gamma_h(t)\phi(x-\xi_h(t),\epsilon_h(t)) + H_0 \label{eq:happ}\\
+     & u(x,t) = \sum_{i=1}^{N} \gamma_u(t)\phi(x-\xi_u(t),\epsilon_u(t)) + U_0 \label{eq:uapp}
+ \end{align}
 
      \DIFadd{donde $H_0$ y $U_0$ son constantes, que denotaremos \textit{Sea level} y \textit{Base velocity}. La idea es que la
      combinación lineal de RBFs en cada caso, capturen las variaciones por sobre los niveles base establecidos, dando así
@@ -266,46 +281,46 @@ del proyecto.
 }
 
      \DIFadd{Para la derivación, consideraremos en primer lugar reemplazar la solución propuesta (\ref{eq:happ}) en (\ref{eq:continuity}), tomando como conocidos $u$ y $u_x$ en un tiempo dado
-     }\begin{align*}\DIFadd{
-     \sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{h_i}\phi_{h_i}(x)] + \left(\sum_{i=1}^{N} \gamma_{h_i} \phi_{h_i}(x) + H_0\right) u_x + u \sum_{i=1}^N \frac{\partial}{\partial x}[\gamma_{h_i}\phi_{h_i}(x)] }& \DIFadd{= 0 }\\
-     \DIFadd{\sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{h_i}\phi_{h_i}(x)] + \sum_{i=1}^{N} \gamma_{h_i} \phi_{h_i}(x)u_x + H_0 u_x +  \sum_{i=1}^N u \frac{\partial}{\partial x}[\gamma_{h_i}\phi_{h_i}(x)] }& \DIFadd{= 0 }\\
-     \DIFadd{\sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{h_i}\phi_{h_i}(x)] + \sum_{i=1}^{N} \gamma_{h_i} \phi_{h_i}(x)u_x + \sum_{i=1}^{N} \frac{H_0 u_x}{N} +  \sum_{i=1}^N u \frac{\partial}{\partial x}[\gamma_{h_i}\phi_{h_i}(x)] }& \DIFadd{= 0 }\\
-     \DIFadd{\sum_{i=1}^N \left(\frac{\partial}{\partial t}[\gamma_{h_i}\phi_{h_i}(x)] + \left(\gamma_{h_i} \phi_{h_i}(x) + \frac{H_0}{N}\right)u_x + u \frac{\partial}{\partial x}[\gamma_{h_i}\phi_{h_i}(x)]\right) }& \DIFadd{= 0
-     }\end{align*}
+     }\begin{align*}
+     \sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{h_i}\phi_{h_i}(x)] + \left(\sum_{i=1}^{N} \gamma_{h_i} \phi_{h_i}(x) + H_0\right) u_x + u \sum_{i=1}^N \frac{\partial}{\partial x}[\gamma_{h_i}\phi_{h_i}(x)] & = 0 \\
+     \sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{h_i}\phi_{h_i}(x)] + \sum_{i=1}^{N} \gamma_{h_i} \phi_{h_i}(x)u_x + H_0 u_x +  \sum_{i=1}^N u \frac{\partial}{\partial x}[\gamma_{h_i}\phi_{h_i}(x)] & = 0 \\
+     \sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{h_i}\phi_{h_i}(x)] + \sum_{i=1}^{N} \gamma_{h_i} \phi_{h_i}(x)u_x + \sum_{i=1}^{N} \frac{H_0 u_x}{N} +  \sum_{i=1}^N u \frac{\partial}{\partial x}[\gamma_{h_i}\phi_{h_i}(x)] & = 0 \\
+     \sum_{i=1}^N \left(\frac{\partial}{\partial t}[\gamma_{h_i}\phi_{h_i}(x)] + \left(\gamma_{h_i} \phi_{h_i}(x) + \frac{H_0}{N}\right)u_x + u \frac{\partial}{\partial x}[\gamma_{h_i}\phi_{h_i}(x)]\right) & = 0
+     \end{align*}
 
      \noindent \DIFadd{aquí se simplifica la notación $\displaystyle \gamma_{h_i}\phi_{h_i}(x) = \gamma_{h_i}(t)\phi(x-\xi_{h_i}(t),\epsilon_{h_i}(t))$. Adicionalmente se agrega una sumatoria sobre $H_0$ para poder formar una sola suma. De la última ecuación obtenida, se desprende que si cada partícula o RBF cumple con
-     }\begin{align}\DIFadd{
+     }\begin{align}
           \frac{\partial}{\partial t}[\gamma_{h_i}\phi_{h_i}(x)] + \left(\gamma_{h_i} \phi_{h_i}(x) + \frac{H_0}{N}\right)u_x + u \frac{\partial}{\partial x}[\gamma_{h_i}\phi_{h_i}(x)] = 0
           \label{eq:simplcont}
-      }\end{align}
+      \end{align}
 
       \noindent \DIFadd{entonces su combinación lineal será una solución de (\ref{eq:continuity}). En (\ref{eq:simplcont}) se aproximan $u$ y $u_x$ por los valores en los centros de las RBFs, esto es, $u \approx u(\xi(t),t)$ y $u_x \approx u_x(\xi(t),t)$ (Aproximación de Taylor de orden $0$). Tal como lo interpreta L. Rossi en \cite{rossi}, esto quiere decir que para cada partícula, estamos aproximando su velocidad por la velocidad en su centro. Por lo tanto, mientras más amplio sea el alcance de cada partícula, mayor será el error que se está cometiendo en la aproximación de la velocidad.
 }
 
       \DIFadd{Una derivación equivalente puede realizarse para $u(x,t)$, el reemplazar (\ref{eq:uapp}) en (\ref{eq:momentum}), esta vez tomando como conocidos $u$ y $h_x$ en un tiempo dado
-      }\begin{align*}\DIFadd{
-      \sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{u_i}\phi_{u_i}(x)] + u  \left(\sum_{i=1}^{N}\frac{\partial}{\partial x} }[\DIFadd{\gamma_{u_i} \phi_{u_i}(x)}]\DIFadd{\right) + g \ h_x }& \DIFadd{= 0 }\\
-      \DIFadd{\sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{u_i}\phi_{u_i}(x)] + \left(\sum_{i=1}^{N}u \frac{\partial}{\partial x} }[\DIFadd{\gamma_{u_i} \phi_{u_i}(x)}]\DIFadd{\right) + \sum_{i=1}^N \frac{g \ h_x}{N} }& \DIFadd{= 0 }\\
-      \DIFadd{\sum_{i=1}^{N}\left( \frac{\partial}{\partial t}[\gamma_{u_i}\phi_{u_i}(x)] + u \frac{\partial}{\partial x} }[\DIFadd{\gamma_{u_i} \phi_{u_i}(x)}] \DIFadd{+ \frac{g \ h_x}{N} \right) }& \DIFadd{= 0
-      }\end{align*}
+      }\begin{align*}
+      \sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{u_i}\phi_{u_i}(x)] + u  \left(\sum_{i=1}^{N}\frac{\partial}{\partial x} [\gamma_{u_i} \phi_{u_i}(x)]\right) + g \ h_x & = 0 \\
+      \sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{u_i}\phi_{u_i}(x)] + \left(\sum_{i=1}^{N}u \frac{\partial}{\partial x} [\gamma_{u_i} \phi_{u_i}(x)]\right) + \sum_{i=1}^N \frac{g \ h_x}{N} & = 0 \\
+      \sum_{i=1}^{N}\left( \frac{\partial}{\partial t}[\gamma_{u_i}\phi_{u_i}(x)] + u \frac{\partial}{\partial x} [\gamma_{u_i} \phi_{u_i}(x)] + \frac{g \ h_x}{N} \right) & = 0
+      \end{align*}
 
       \noindent \DIFadd{donde se realiza la misma simplificación de notación, y el mismo truco para sumar $g h_x$. Del mismo modo que antes, si cada partícula cumple con  
-      }\begin{align}\DIFadd{
-          \frac{\partial}{\partial t}[\gamma_{u_i}\phi_{u_i}(x)] + u \frac{\partial}{\partial x} }[\DIFadd{\gamma_{u_i} \phi_{u_i}(x)}] \DIFadd{+ \frac{g \ h_x}{N} = 0
+      }\begin{align}
+          \frac{\partial}{\partial t}[\gamma_{u_i}\phi_{u_i}(x)] + u \frac{\partial}{\partial x} [\gamma_{u_i} \phi_{u_i}(x)] + \frac{g \ h_x}{N} = 0
           \label{eq:simplmom}
-      }\end{align}
+      \end{align}
 
       \noindent \DIFadd{entonces su combinación lineal será una solución de  (\ref{eq:momentum}). En (\ref{eq:simplmom}) se aproximan $u$ y $h_x$ por los valores en los centros de las RBFs, generando el mismo tipo de error que antes.
 }
 
 
       \DIFadd{Reemplazando las RBFs respectivas (Gaussianas) en (\ref{eq:simplcont}) y (\ref{eq:simplmom}), desarrollando el álgebra necesaria, y realizando las siguientes dos aproximaciones
-      }\begin{align*}\DIFadd{
-          e^{\epsilon_h(t)^2 (x-\xi_h(t))^2} }& \DIFadd{= 1 + \epsilon_h(t)^2 (x-\xi_h(t))^2 + O(}[\DIFadd{x-\xi_h(t)}]\DIFadd{^3) }\\
-          \DIFadd{e^{\epsilon_u(t)^2 (x-\xi_u(t))^2} }& \DIFadd{= 1 + \epsilon_u(t)^2 (x-\xi_u(t))^2 + O(}[\DIFadd{x-\xi_u(t)}]\DIFadd{^3)
-      }\end{align*}
+      }\begin{align*}
+          e^{\epsilon_h(t)^2 (x-\xi_h(t))^2} & = 1 + \epsilon_h(t)^2 (x-\xi_h(t))^2 + O([x-\xi_h(t)]^3) \\
+          e^{\epsilon_u(t)^2 (x-\xi_u(t))^2} & = 1 + \epsilon_u(t)^2 (x-\xi_u(t))^2 + O([x-\xi_u(t)]^3)
+      \end{align*}
       \DIFadd{por series de Taylor centradas en $\xi_h(t)$ y $\xi_u(t)$ respectivamente, se obtiene el sistema dinámico (\ref{eq:system}) con las ecuaciones que definen la evolución de los parámetros, para las partículas de $h$ y $u$
-     }\begin{align}\DIFadd{
+     }\begin{align}
      \begin{split}
     \gamma _h'(t) &= -\left(\frac{H}{N} + \gamma _h(t)\right)u_x  \\
     \xi _h'(t) &= u \\
@@ -315,7 +330,7 @@ del proyecto.
     \epsilon _u'(t) &= \frac{g \ h_x \ \epsilon _u(t)}{2 N \ \gamma_u(t)}
     \end{split}
     \label{eq:system}
-    }\end{align}
+    \end{align}
 
     \DIFadd{Existen varios detalles interesantes en este sistema, y que se comentan a continuación:
 }
