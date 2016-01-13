@@ -1,0 +1,18 @@
+@article{rossi,
+    author  = "Louis F. Rossi",
+    title   = "Achieving High-Order Convergence Rates With Deforming Basis Functions",
+    year    = "2005",
+    journal = "SIAM J. Sci. Comput.",
+    volume  = "26",
+    number  = "3",
+    pages   = "885-906"
+}
+
+@article{swp,
+    author  = "Hyokwang Lee - Soonhung Han",
+    title   = "Solving the Shallow Water equations using 2D SPH particles for interactive applications",
+    year    = "2010",
+    journal = "Vis Comput",
+    volume  = "26",
+    pages   = "865-872"
+}
