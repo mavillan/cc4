@@ -1,0 +1,376 @@
+%DIF 1c1
+%DIF LATEXDIFF DIFFERENCE FILE
+%DIF DEL ent2.tex   Fri Dec  4 07:24:16 2015
+%DIF ADD ent3.tex   Tue Jan  5 09:08:36 2016
+%DIF < \documentclass[spanish, fleqn]{article}
+%DIF -------
+\documentclass[spanish]{article} %DIF > 
+%DIF -------
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+%DIF 4c4
+%DIF < \usepackage{amsmath}
+%DIF -------
+\usepackage{mathtools} %DIF > 
+%DIF -------
+\usepackage{graphicx,float}
+\usepackage{amsfonts,txfonts}
+%DIF 7d7
+%DIF < \usepackage{mathrsfs}
+%DIF -------
+\usepackage[colorlinks, urlcolor=blue]{hyperref}
+%DIF 9d8
+%DIF < \usepackage{fourier}
+%DIF -------
+\usepackage[top = 1.5cm, bottom = 1.5cm, left = 2cm, right = 2cm]{geometry}
+
+
+\title{Presentación de Avance - Proyecto SWE \\ILI384: Taller de Modelos y Métodos Cuantitativos}
+\author{Rodrigo Naranjo \and Martín Villanueva}
+\date{\DIFdelbegin \DIFdel{11 de noviembre 2015}\DIFdelend \DIFaddbegin \DIFadd{5 de Enero 2016}\DIFaddend }
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF CTRADITIONAL PREAMBLE %DIF PREAMBLE
+\RequirePackage{color}\definecolor{RED}{rgb}{1,0,0}\definecolor{BLUE}{rgb}{0,0,1} %DIF PREAMBLE
+\RequirePackage[stable]{footmisc} %DIF PREAMBLE
+\providecommand{\DIFaddtex}[1]{{\protect\color{blue} \sf #1}} %DIF PREAMBLE
+\providecommand{\DIFdeltex}[1]{{\protect\color{red} [..\footnote{removed: #1} ]}} %DIF PREAMBLE
+%DIF SAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddbegin}{} %DIF PREAMBLE
+\providecommand{\DIFaddend}{} %DIF PREAMBLE
+\providecommand{\DIFdelbegin}{} %DIF PREAMBLE
+\providecommand{\DIFdelend}{} %DIF PREAMBLE
+%DIF FLOATSAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}} %DIF PREAMBLE
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}} %DIF PREAMBLE
+\providecommand{\DIFaddbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFaddendFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelendFL}{} %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF HYPERREF PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFadd}[1]{\texorpdfstring{\DIFaddtex{#1}}{#1}} %DIF PREAMBLE
+\providecommand{\DIFdel}[1]{\texorpdfstring{\DIFdeltex{#1}}{}} %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
+
+\begin{document}
+\maketitle
+
+\thispagestyle{empty}
+
+
+\section{Descripción del Problema}
+El problema consiste en modelar el sistema de \textit{Shallow Water Equations} en $1D$ y $2D$, de tal modo
+que se pueda determinar la evolución del sistema, dadas las ecuaciones diferenciales que modelan el problema,
+las condiciones iniciales y las condiciones de borde. Las SWE corresponden a un caso particular de las ecuaciones
+de Navier-Stokes, que se obtienen al hacer la suposición de que el fluido es incompresible y que no existe viscosidad, aunque esta última puede relajarse para obtener un sistema más realista. En el caso general (2D) las ecuaciones pueden
+escribirse como a continuación
+\DIFdelbegin \DIFdel{:
+}%DIFDELCMD < \begin{flalign}
+%DIFDELCMD <  & \frac{\partial u}{\partial t} + u \frac{\partial u}{\partial x} + v \frac{\partial u}{\partial y} + g \frac{\partial h}{\partial x} = 0 \\
+%DIFDELCMD <  & \frac{\partial v}{\partial t} + u \frac{\partial v}{\partial x} + v \frac{\partial v}{\partial y} + g \frac{\partial h}{\partial y} = 0 \\
+%DIFDELCMD <  & \frac{\partial h}{\partial t} + \frac{\partial }{\partial x}(u(h-b)) + \frac{\partial }{\partial y}(v(h-b)) = 0 
+%DIFDELCMD < \end{flalign}
+%DIFDELCMD < %%%
+\DIFdelend \DIFaddbegin \begin{align}
+\begin{split}
+ & \frac{\partial u}{\partial t} + u \frac{\partial u}{\partial x} + v \frac{\partial u}{\partial y} + g \frac{\partial h}{\partial x} = 0 \\
+ & \frac{\partial v}{\partial t} + u \frac{\partial v}{\partial x} + v \frac{\partial v}{\partial y} + g \frac{\partial h}{\partial y} = 0 \\
+ & \frac{\partial h}{\partial t} + \frac{\partial }{\partial x}(u(h-b)) + \frac{\partial }{\partial y}(v(h-b)) = 0
+\end{split}
+\end{align}
+\DIFaddend donde las variables de interés (a modelar) son $h(x,y,t)$ (nivel de agua), $u(x,y,t)$ (componente de velocidad de una columna de
+agua en $x$), $v(x,y,t)$ (componente de velocidad de una columna de agua en $y$). Adicionalmente deben ser conocidos $b(x,y)$\DIFaddbegin \DIFadd{, }\DIFaddend que corresponde a la \textit{batimetría} que describe la forma del fondo marino  y las condiciones de borde e iniciales del sistema.
+
+\begin{figure}[htpb!]
+\centering
+\includegraphics[scale=0.6]{schematic.png}
+\caption{Esquema de SWE en una dimensión.}
+\end{figure}
+
+\section{La Implementación}
+Para la resolución del problema se plantea un enfoque del tipo partículas, \DIFaddbegin \DIFadd{similar a \textit{Shallow Water Particles} \cite{swp} }\DIFaddend donde la superficie del agua se modela por medio de \DIFdelbegin \DIFdel{un }\DIFdelend \DIFaddbegin \DIFadd{la distribución que tome este }\DIFaddend conjunto de partículas\DIFdelbegin \DIFdel{y por la forma en que se distribuyen. Para ser más precisos}\DIFdelend \DIFaddbegin \DIFadd{. En el enfoque aquí propuesto}\DIFaddend , cada una de las variables de interés ($h$, $u$ y $v$) se aproximan como una combinación lineal de funciones \DIFdelbegin \DIFdel{$RBF$. Para $h$, por ejemplo, se tiene:
+}%DIFDELCMD < 
+
+%DIFDELCMD < $$h(x,y,t) = \sum_{i=0}^{N} \gamma_i(t)\Phi(||\mathbf{x}-\boldsymbol{\xi}_i(t)||, \epsilon_i(t))$$
+%DIFDELCMD <  %%%
+\DIFdelend \DIFaddbegin \DIFadd{RBF
+}\begin{align}
+ \sum_{i=1}^{N} \gamma_i(t)\Phi(||\mathbf{x}-\boldsymbol{\xi}_i(t)||, \epsilon_i(t))    
+\end{align}
+ \DIFaddend 
+
+\DIFaddbegin \noindent \DIFaddend donde la función RBF a ocupar es de preferencia una función de soporte compacto, de modo que se acote el radio de influencia de cada \DIFdelbegin \DIFdel{función}\DIFdelend \DIFaddbegin \DIFadd{partícula}\DIFaddend , y se generen de este modo sistemas \textit{sparse}.
+
+Lo que se quiere lograr sigue el enfoque \textit{Evolutive RBF} \DIFaddbegin \DIFadd{como en \cite{rossi}}\DIFaddend , donde se obtienen ecuaciones de evolución (ODE \DIFdelbegin \DIFdel{'s}\DIFdelend \DIFaddbegin \DIFadd{system}\DIFaddend ) para los parámetros dependientes del tiempo en cada RBF ($\gamma(t)$, $\boldsymbol{\xi}_i(t)$ y $\epsilon_i(t)$). \DIFdelbegin \DIFdel{En dicho caso, }\DIFdelend \DIFaddbegin \DIFadd{Las ventajas de esto, es que }\DIFaddend para obtener el estado del sistema en un tiempo \DIFdelbegin \DIFdel{$t+\triangle t$, sería }\DIFdelend \DIFaddbegin \DIFadd{$t+\Delta t$, requiere }\DIFaddend tan sólo computar las ecuaciones de evolución para cada RBF (de cada variable) y luego sumar los resultados respectivos en el espacio.
+
+La implementación de la solución espera ser incremental, abordando la complejidad del problema paso por paso. En base a esto, se planea seguir el siguiente orden.
+
+\begin{enumerate}
+\item Inicialmente se propone resolver las \emph{Burgers' Equations} en 1D sin viscosidad, definidas por:
+\DIFdelbegin %DIFDELCMD < \begin{equation}
+%DIFDELCMD < \frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} = 0
+%DIFDELCMD < \label{eq:burger}
+%DIFDELCMD < \end{equation}
+%DIFDELCMD < %%%
+\DIFdelend \DIFaddbegin \begin{align}
+\frac{\partial u}{\partial t} + u\frac{\partial u}{\partial x} = 0
+\label{eq:burger}
+\end{align}
+\DIFaddend que es de interés pues es no lineal y \DIFdelbegin \DIFdel{que }\DIFdelend se deriva de un modelo de convección-difusión, por lo tanto muy similar a las SWE.
+
+\item El siguiente paso, consiste en resolver las SWE en 1D\DIFdelbegin \DIFdel{(solo se considerará el movimiento en el eje X)}\DIFdelend , a modo de obtener una idea de las propiedades y comportamiento de la solución propuesta\DIFaddbegin \DIFadd{, }\DIFaddend antes de avanzar a más dimensiones. Para este paso se pretende ocupar en primer lugar funciones \DIFdelbegin \DIFdel{RFB }\DIFdelend \DIFaddbegin \DIFadd{RBF }\DIFaddend gaussianas, para luego dar con alguna implementación con funciones de soporte compacto.
+
+\item Implementar la solución anterior al problema en 2D, considerando movimiento en el eje X e Y.
+
+\item Implementar condiciones de borde, iniciales y batimetría utilizadas (por otros métodos de simulación) y probarlos con esta solución para establecer comparaciones, y verificar si se están obteniendo resultados correctos.
+
+\item Posiblemente también será necesario agregar los términos de viscosidad al sistema, para analizar sus efectos y \DIFdelbegin \DIFdel{para hacerlo }\DIFdelend \DIFaddbegin \DIFadd{obtener resultados }\DIFaddend más \DIFdelbegin \DIFdel{realista}\DIFdelend \DIFaddbegin \DIFadd{realistas}\DIFaddend .
+
+\item Buscar métodos para optimizar la ejecución de la solución encontrada: Paralelización/Implementación en GPU, Fast multipole method, aprovechar propiedades del sistema sparse, entre otras.
+\end{enumerate}
+
+
+\section{Dificultades}
+Se presentan aquí algunas de las dificultades que se conocen, y otras que eventualmente podrían aparecer en la implementación
+del proyecto.
+\begin{itemize}
+    \item La batimetría \DIFdelbegin \DIFdel{$b(x,y,t)$ }\DIFdelend \DIFaddbegin \DIFadd{$b(x,y)$ }\DIFaddend es, en general, una función discontinua (o que se conoce parcialmente), y por lo tanto
+    debe hallarse una manera de aproximar \DIFdelbegin \DIFdel{su derivada}\DIFdelend \DIFaddbegin \DIFadd{sus derivadas}\DIFaddend .
+    \item En simulaciones ocupando otros métodos (SPH \textit{Smoothed Particle \DIFdelbegin \DIFdel{Hidrodynamics}\DIFdelend \DIFaddbegin \DIFadd{Hydrodynamics}\DIFaddend })\DIFaddbegin \DIFadd{, }\DIFaddend se ha notado que no tomar
+    en cuenta la viscosidad, puede llevar a problemas de estabilidad numérica en las simulaciones.
+    \item Probablemente en las simulaciones sea necesario ocupar una gran cantidad de partículas para modelar la superficie
+    del agua, lo cual lleva a una gran cantidad de computación para determinar los estados siguientes del sistema. Por ello,
+    \DIFdelbegin \DIFdel{quizas }\DIFdelend \DIFaddbegin \DIFadd{quizás }\DIFaddend sea necesario paralelizar la ejecución, o buscar métodos más eficientes de computación (FMM Fast Multipole
+    Method).
+\end{itemize}                                                                                                                                                                                                                                                                                                                                                                                                     
+\newpage  
+\section{\DIFdelbegin \DIFdel{Desarrollo}%DIFDELCMD < }
+%DIFDELCMD <   \subsection{%%%
+\DIFdelend Burgers' Equation}
+  \DIFdelbegin \subsubsection{\DIFdel{Análisis Teórico}}
+    %DIFAUXCMD
+\addtocounter{subsubsection}{-1}%DIFAUXCMD
+\DIFdelend \DIFaddbegin \subsection{\DIFadd{Análisis Teórico}}
+    \DIFaddend Para realizar una prueba preliminar antes de modelar las SWE, se procedió a resolver la Burgers' Equation (\ref{eq:burger}), una ecuación que \DIFdelbegin \DIFdel{permite modelar }\DIFdelend \DIFaddbegin \DIFadd{explica }\DIFaddend de manera simplificada el comportamiento de un fluido incompresible, por medio de las leyes de la conservación. Para realizar esto se define una solución $u(x,t)$ como una combinación lineal de \DIFdelbegin \DIFdel{RBF's}\DIFdelend \DIFaddbegin \DIFadd{RBFs}\DIFaddend , del siguiente modo
+    \DIFdelbegin %DIFDELCMD < \begin{align}
+%DIFDELCMD <       u(x,t) = \sum_{i} \Phi_i(x,t) = \sum_i \gamma_i(t)\phi_i(x-\xi_i(t),\epsilon_i)
+%DIFDELCMD <     \end{align}
+%DIFDELCMD <     %%%
+\DIFdelend \DIFaddbegin \begin{align}
+      u(x,t) = \sum_{i} \phi_{h_i}(x,t) = \sum_i \gamma_i(t)\phi_{h_i}(x-\xi_i(t),\epsilon_i)
+    \end{align}
+    \DIFaddend 
+
+    \DIFdelbegin \DIFdel{Para realizar las pruebas iniciales se ocupa }\DIFdelend \DIFaddbegin \noindent \DIFadd{donde se utiliza }\DIFaddend $\displaystyle \phi(x,\epsilon) = e^{-(\epsilon x)^2}$. Siguiendo el enfoque \textit{evolutivo} se propone \DIFaddbegin \DIFadd{a cada }\DIFaddend $\Phi(x,t)$ (se omite \DIFdelbegin \DIFdel{subindice }\DIFdelend \DIFaddbegin \DIFadd{subíndice }\DIFaddend por simplicidad) como solución \DIFdelbegin \DIFdel{a }\DIFdelend \DIFaddbegin \DIFadd{de }\DIFaddend (\ref{eq:burger}), sin embargo para abordar el problema de la no linealidad, debe hacer una modificación al problema inicial. En vista de que se propone a $\Phi(x,t)$ como una solución a la PDE, es razonable aproximar $u(x,t)$ como una expansión de Taylor en torno a $(\xi(t),t)$ obteniendo
+    \begin{align}
+      u(x,t) = u(\xi(t),t) + \frac{u_x(\xi(t),t)}{1!}(x-\xi(t)) + \cdots
+    \end{align}
+    si tomamos sólo el primer término de esta expansión (de orden cero)\DIFdelbegin \DIFdel{entonces se obtiene la equación de burger simplificada:
+    }%DIFDELCMD < \begin{align}
+%DIFDELCMD <       \frac{\partial u}{\partial t} + u(\xi(t),t)\frac{\partial u}{\partial x} = 0
+%DIFDELCMD <       \label{eq:burgersimple}
+%DIFDELCMD <     \end{align}
+%DIFDELCMD < 
+
+%DIFDELCMD <     %%%
+\DIFdel{Luego si }\DIFdelend \DIFaddbegin \DIFadd{, y  }\DIFaddend se reemplaza la solución propuesta $\Phi(x,t)$\DIFaddbegin \DIFadd{, entonces se obtiene
+    }\begin{align}
+      \frac{\partial}{\partial t}\Phi(x-\xi(t),\epsilon(t)) + u(\xi(t),t)\ \frac{\partial}{\partial x}\Phi(x-\xi(t),\epsilon(t)) = 0
+      \label{eq:burgersimple}
+    \end{align}
+
+    \noindent \DIFadd{luego realizando el álgebra necesaria }\DIFaddend en (\ref{eq:burgersimple})\DIFaddbegin \DIFadd{, }\DIFaddend se obtienen las siguientes ecuaciones de evolución para \DIFdelbegin \DIFdel{cada una de las }\DIFdelend \DIFaddbegin \DIFadd{los parámetros de cada }\DIFaddend RBF
+    \begin{align*}
+    & \epsilon'(t) = 0 \\
+    & \gamma'(t) = 0  \\
+    & \xi'(t) = u(\xi(t),t)
+    \end{align*}
+   \DIFdelbegin \DIFdel{lo cual nos }\DIFdelend \DIFaddbegin 
+
+    \noindent \DIFadd{este sistema }\DIFaddend dice que cada una de las partículas \DIFdelbegin \DIFdel{mantendra }\DIFdelend \DIFaddbegin \DIFadd{mantiene su }\DIFaddend su forma y peso, pero que sin embargo pueden cambiar su posición \DIFaddbegin \DIFadd{(centro) en }\DIFaddend el tiempo, y por lo tanto la altura de la columna de agua en cada punto estará determinada sólo por la distribución de las partículas.
+
+
+    \DIFdelbegin \subsubsection{\DIFdel{Análisis experimental}}
+    %DIFAUXCMD
+\addtocounter{subsubsection}{-1}%DIFAUXCMD
+\DIFdelend \DIFaddbegin \subsection{\DIFadd{Análisis experimental}}
+    \DIFaddend Se realizó un experimento modelando el comportamiento de la ecuación para el estado inicial \DIFdelbegin \DIFdel{:
+    }%DIFDELCMD < \begin{equation*}
+%DIFDELCMD <       u(x) = I_{x \in [7,12]}\frac{(8-x)(x-12)}{12}
+%DIFDELCMD <     \end{equation*} \\
+%DIFDELCMD <     %%%
+\DIFdelend \DIFaddbegin \DIFadd{$u(x,0) = I_{x \in [8,12]}\frac{(8-x)(x-12)}{12}$ como se muestra a continuación
+}
+
+    \begin{figure}[H]
+        \centering
+        \DIFaddendFL \includegraphics[scale=0.6]{initialu.png}
+    \DIFdelbeginFL %DIFDELCMD < \\
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \end{figure}
+    \DIFaddend 
+
+
+    Computando \DIFdelbegin \DIFdel{simultaneamente }\DIFdelend \DIFaddbegin \DIFadd{simultáneamente }\DIFaddend las ecuaciones de evolución para cada una de las RBF\DIFdelbegin \DIFdel{que componen la proximación de la solución}\DIFdelend , y luego sumando la combinación lineal en cada time step, se obtiene entonces la \DIFdelbegin \DIFdel{solución de la ecuación (\ref{eq:burgersimple}) }\DIFdelend \DIFaddbegin \DIFadd{aproximación de la solución }\DIFaddend en el tiempo. Como se vio anteriormente el único parámetro que \DIFaddbegin \DIFadd{realmente }\DIFaddend varía \DIFdelbegin \DIFdel{en el tiempo }\DIFdelend es $\xi(t)$, que es la posición del centro de cada partícula. A continuación se muestra la evolución de cada uno de estos centros para un sistema de $20$ partículas
+    \DIFdelbegin \DIFdel{.
+    }%DIFDELCMD < \begin{figure}
+%DIFDELCMD <       %%%
+\DIFdelendFL \DIFaddbeginFL \begin{figure}[H]
+      \DIFaddendFL \centering
+      \includegraphics[scale=0.5]{xis.png}
+    \end{figure}
+
+    Algunos resultados obtenidos para la evolución de la ecuación en el tiempo son los que se muestran a continuación: \\
+    \begin{figure}[H]
+      \centering
+      \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6]{t1000.png}
+      \end{minipage}%
+      \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6]{t2000.png}
+      \end{minipage}
+    \end{figure}
+    \begin{figure}[H]
+      \centering
+      \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6]{t3000.png}
+      \end{minipage}%
+      \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6]{t4000.png}
+      \end{minipage}
+    \end{figure}
+    \begin{figure}[H]
+      \centering
+      \begin{minipage}{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.6]{t5000.png}
+      \end{minipage}%
+    \end{figure}
+    \DIFdelbegin \DIFdel{Como se puede observar}\DIFdelend \DIFaddbegin \DIFadd{Tal como se observa}\DIFaddend , el comportamiento modelado por la \textit{Burgers' Equation} es bastante simple, consistiendo en un
+    movimiento de la perturbación inicial $u(x,0)$ \DIFdelbegin \DIFdel{acorde a su posición anterior}\DIFdelend \DIFaddbegin \DIFadd{hacia la derecha}\DIFaddend . Algunos de los detalles que pudieron
+    observarse en la simulación\DIFaddbegin \DIFadd{, }\DIFaddend son la aparición de una perturbación más pequeña que parece moverse a menor velocidad que el
+    resto del sistema. \DIFaddbegin \DIFadd{Tales problemas pueden ser abordados por medio de \textit{remeshing}, esto es, pasado un intervalo de tiempo volver a realizar una interpolación RBF, para estabilizar las posiciones y velocidades del sistema.
+    }
+
+    \section{\DIFadd{Evolutive Shallow Water Equations}}
+
+    \subsection{\DIFadd{Derivación en 1D}}
+
+    \DIFadd{El sistema a resolver corresponde a la versión 1D de las SWE, tomando por simplicidad la restricción de que la batimetría es constante y cero $b(x)=0$, respecto al nivel de referencia. Así el sistema a trabaja es
+}\begin{align}
+ & \frac{\partial h}{\partial t} + h \frac{\partial u}{\partial x} + u \frac{\partial h}{\partial x} = 0 \label{eq:continuity}\\
+ & \frac{\partial u}{\partial t} + u \frac{\partial u}{\partial x} + g \frac{\partial h}{\partial x} = 0 \label{eq:momentum}
+\end{align}
+
+    \DIFadd{Tal como se hizo anteriormente para la \textit{Burgers' Equation}, se proponen como solución al sistema anterior, las siguientes dos funciones respectivamente:
+}
+
+\begin{align}
+     & h(x,t) = \sum_{i=1}^{N} \gamma_h(t)\phi(x-\xi_h(t),\epsilon_h(t)) + H_0 \label{eq:happ}\\
+     & u(x,t) = \sum_{i=1}^{N} \gamma_u(t)\phi(x-\xi_u(t),\epsilon_u(t)) + U_0 \label{eq:uapp}
+ \end{align}
+
+     \DIFadd{donde $H_0$ y $U_0$ son constantes, que denotaremos \textit{Sea level} y \textit{Base velocity}. La idea es que la
+     combinación lineal de RBFs en cada caso, capturen las variaciones por sobre los niveles base establecidos, dando así
+     más estabilidad al enfoque evolutivo.
+}
+
+     \DIFadd{Para la derivación, consideraremos en primer lugar reemplazar la solución propuesta (\ref{eq:happ}) en (\ref{eq:continuity}), tomando como conocidos $u$ y $u_x$ en un tiempo dado
+     }\begin{align*}
+     \sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{h_i}\phi_{h_i}(x)] + \left(\sum_{i=1}^{N} \gamma_{h_i} \phi_{h_i}(x) + H_0\right) u_x + u \sum_{i=1}^N \frac{\partial}{\partial x}[\gamma_{h_i}\phi_{h_i}(x)] & = 0 \\
+     \sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{h_i}\phi_{h_i}(x)] + \sum_{i=1}^{N} \gamma_{h_i} \phi_{h_i}(x)u_x + H_0 u_x +  \sum_{i=1}^N u \frac{\partial}{\partial x}[\gamma_{h_i}\phi_{h_i}(x)] & = 0 \\
+     \sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{h_i}\phi_{h_i}(x)] + \sum_{i=1}^{N} \gamma_{h_i} \phi_{h_i}(x)u_x + \sum_{i=1}^{N} \frac{H_0 u_x}{N} +  \sum_{i=1}^N u \frac{\partial}{\partial x}[\gamma_{h_i}\phi_{h_i}(x)] & = 0 \\
+     \sum_{i=1}^N \left(\frac{\partial}{\partial t}[\gamma_{h_i}\phi_{h_i}(x)] + \left(\gamma_{h_i} \phi_{h_i}(x) + \frac{H_0}{N}\right)u_x + u \frac{\partial}{\partial x}[\gamma_{h_i}\phi_{h_i}(x)]\right) & = 0
+     \end{align*}
+
+     \noindent \DIFadd{aquí se simplifica la notación $\displaystyle \gamma_{h_i}\phi_{h_i}(x) = \gamma_{h_i}(t)\phi(x-\xi_{h_i}(t),\epsilon_{h_i}(t))$. Adicionalmente se agrega una sumatoria sobre $H_0$ para poder formar una sola suma. De la última ecuación obtenida, se desprende que si cada partícula o RBF cumple con
+     }\begin{align}
+          \frac{\partial}{\partial t}[\gamma_{h_i}\phi_{h_i}(x)] + \left(\gamma_{h_i} \phi_{h_i}(x) + \frac{H_0}{N}\right)u_x + u \frac{\partial}{\partial x}[\gamma_{h_i}\phi_{h_i}(x)] = 0
+          \label{eq:simplcont}
+      \end{align}
+
+      \noindent \DIFadd{entonces su combinación lineal será una solución de (\ref{eq:continuity}). En (\ref{eq:simplcont}) se aproximan $u$ y $u_x$ por los valores en los centros de las RBFs, esto es, $u \approx u(\xi(t),t)$ y $u_x \approx u_x(\xi(t),t)$ (Aproximación de Taylor de orden $0$). Tal como lo interpreta L. Rossi en \cite{rossi}, esto quiere decir que para cada partícula, estamos aproximando su velocidad por la velocidad en su centro. Por lo tanto, mientras más amplio sea el alcance de cada partícula, mayor será el error que se está cometiendo en la aproximación de la velocidad.
+}
+
+      \DIFadd{Una derivación equivalente puede realizarse para $u(x,t)$, el reemplazar (\ref{eq:uapp}) en (\ref{eq:momentum}), esta vez tomando como conocidos $u$ y $h_x$ en un tiempo dado
+      }\begin{align*}
+      \sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{u_i}\phi_{u_i}(x)] + u  \left(\sum_{i=1}^{N}\frac{\partial}{\partial x} [\gamma_{u_i} \phi_{u_i}(x)]\right) + g \ h_x & = 0 \\
+      \sum_{i=1}^{N} \frac{\partial}{\partial t}[\gamma_{u_i}\phi_{u_i}(x)] + \left(\sum_{i=1}^{N}u \frac{\partial}{\partial x} [\gamma_{u_i} \phi_{u_i}(x)]\right) + \sum_{i=1}^N \frac{g \ h_x}{N} & = 0 \\
+      \sum_{i=1}^{N}\left( \frac{\partial}{\partial t}[\gamma_{u_i}\phi_{u_i}(x)] + u \frac{\partial}{\partial x} [\gamma_{u_i} \phi_{u_i}(x)] + \frac{g \ h_x}{N} \right) & = 0
+      \end{align*}
+
+      \noindent \DIFadd{donde se realiza la misma simplificación de notación, y el mismo truco para sumar $g h_x$. Del mismo modo que antes, si cada partícula cumple con  
+      }\begin{align}
+          \frac{\partial}{\partial t}[\gamma_{u_i}\phi_{u_i}(x)] + u \frac{\partial}{\partial x} [\gamma_{u_i} \phi_{u_i}(x)] + \frac{g \ h_x}{N} = 0
+          \label{eq:simplmom}
+      \end{align}
+
+      \noindent \DIFadd{entonces su combinación lineal será una solución de  (\ref{eq:momentum}). En (\ref{eq:simplmom}) se aproximan $u$ y $h_x$ por los valores en los centros de las RBFs, generando el mismo tipo de error que antes.
+}
+
+
+      \DIFadd{Reemplazando las RBFs respectivas (Gaussianas) en (\ref{eq:simplcont}) y (\ref{eq:simplmom}), desarrollando el álgebra necesaria, y realizando las siguientes dos aproximaciones
+      }\begin{align*}
+          e^{\epsilon_h(t)^2 (x-\xi_h(t))^2} & = 1 + \epsilon_h(t)^2 (x-\xi_h(t))^2 + O([x-\xi_h(t)]^3) \\
+          e^{\epsilon_u(t)^2 (x-\xi_u(t))^2} & = 1 + \epsilon_u(t)^2 (x-\xi_u(t))^2 + O([x-\xi_u(t)]^3)
+      \end{align*}
+      \DIFadd{por series de Taylor centradas en $\xi_h(t)$ y $\xi_u(t)$ respectivamente, se obtiene el sistema dinámico (\ref{eq:system}) con las ecuaciones que definen la evolución de los parámetros, para las partículas de $h$ y $u$
+     }\begin{align}
+     \begin{split}
+    \gamma _h'(t) &= -\left(\frac{H}{N} + \gamma _h(t)\right)u_x  \\
+    \xi _h'(t) &= u \\
+    \epsilon _h'(t) &= \frac{H \ u_x \ \epsilon_h(t)}{2 N \ \gamma_h(t)} \\
+    \gamma _u'(t) &= -\frac{g h_x}{N} \\
+    \xi _u'(t) &= u \\
+    \epsilon _u'(t) &= \frac{g \ h_x \ \epsilon _u(t)}{2 N \ \gamma_u(t)}
+    \end{split}
+    \label{eq:system}
+    \end{align}
+
+    \DIFadd{Existen varios detalles interesantes en este sistema, y que se comentan a continuación:
+}
+
+    \begin{enumerate}
+        \item \DIFadd{Aunque pareciera que el sistema (\ref{eq:system}) está desacoplado (los parámetros de $h$ no dependen de los de $u$, y viceversa) esto no es así, pues los parámetros $\gamma_h, \xi_h, \epsilon_h$ dependen de $u$ y $u_x$, y los parámetros $\gamma_u, \xi_u, \epsilon_u$ dependen de $h_x$.
+        }\item \DIFadd{Las velocidades de las partículas/RBF's de $h$ y $u$ se mueven con la misma velocidad en su centro ($\xi_h'(t) = \xi_u'(t) = u$). Tomando en cuenta que además se ocupan la misma cantidad de partículas en cada caso ($N$), y con los mismos centros iniciales (detalle de implementación), esto implica que en todo tiempo exista una correspondencia una a uno, entre partículas de $h$ y partículas de $u$.
+        }\item \DIFadd{A diferencia de las ecuaciones de evolución obtenidas para la \textit{Burgers' Equation}, aquí los parámetros $\gamma$ y $\xi$ respectivos sí evolucionan. Esto difiere también del concepto de partícula planteado en \textit{SWP} \cite{swp}, donde las partículas de $h$ no pueden cambiar su peso ni su forma, cumpliendo por definición la ecuación de continuidad.
+        }\item \DIFadd{Es importante notar que en la ecuación de evolución para $\epsilon$, en ambos casos aparece en el denominador $\gamma_h$ y $\gamma_u$ respectivamente. Por lo tanto, estas dos ecuaciones deben tratarse con especial cuidado para no caer en indeterminaciones. Una posible forma de abordar este problema, es estableciendo los niveles base $H_0$ y $U_0$ por debajo del valor mínimo en cada caso.
+        }\item \DIFadd{Es interesante notar cómo se autorregulan los parámetros $\gamma_h$ y $\epsilon_h$ para satisfacer la condición de continuidad. Si $\gamma_h \rightarrow 0$ entonces $\epsilon_h \rightarrow \infty$, lo cual quiere decir que si una partícula disminuye su peso/altura, entonces se distribuye en una extensión espacial más amplia (distribuye su masa de acuerdo a su altura).  
+    }\end{enumerate}
+
+    \subsection{\DIFadd{Simulación en 1D}}
+
+    \DIFadd{El proceso de simulación se compone básicamente de la ejecución de tres pasos: \textbf{Evolución}, \textbf{Reconstrucción} y \textbf{Verificación}.
+}
+
+    \begin{enumerate}
+        \item \DIFadd{\textbf{Evolución.} }\  \DIFadd{En cada time step, será necesario hacer evolucionar los parámetros de todas las partículas/RBFs del sistema, hacia los valores en un tiempo siguiente. Debido a que estas están desacopladas, esta operación es fácilmente vectorizable o paralelizable. Por lo demás son operaciones de muy bajo costo computacional, siendo esta la gran ventaja del enfoque evolutivo.
+        }\item \DIFadd{\textbf{Reconstrucción.} }\ \DIFadd{Con los valores de cada uno de los parámetros en un tiempo siguiente, ahora es posible reconstruir las funciones $u$, $u_x$, $h$ y $h_x$ como la combinación lineal de las correspondientes partículas. Esto es necesario, pues se debe conocer los valores de estas funciones en las posiciones de los centros de las partículas.
+        }\item \DIFadd{\textbf{Verificación.} }\ \DIFadd{Este paso corresponde a verificar la calidad de la soluciones obtenida en cada tiempo, estableciendo las condiciones bajo las cuales es necesario hacer \textit{remeshing}. Algunas condiciones posibles son:
+}
+
+        \begin{enumerate}
+            \item \DIFadd{Si $\gamma=0$ para alguna partícula de $h$ o $u$, entonces el sistema (\ref{eq:system}) se indetermina. Para resolver este problema se puede intentar bajar el nivel base $H_0$ o $U_0$, como alternativa al \textit{remeshing}.
+            }\item \DIFadd{Como se analizó en la sección de derivación, la precisión espacial de nuestra solución está limitada por la extensión de cada una de las RBFs, vale decir, el método posee un error espacial $\displaystyle O(1 / \epsilon_{\text{min}}^2)$ }\footnotemark[1]\DIFadd{. Por lo tanto si en alguna de las partículas (tanto para $h$ como $u$), ocurre que $\epsilon \rightarrow 0$, nos indica que nuestra solución va por mal camino.
+            }\item \DIFadd{El otro problema ocurre cuando las partículas empiezan a separarse considerablemente entre sí, formando \textit{gaps} (algo como lo que sucedió en las simulaciones de \textit{Burgers' Equation}). Para esto se puede establecer una distancia máxima entre partículas adyacentes $|\xi_i(t)-\xi_{i+1}(t)| \leq D_{\text{max}}$, la cual una vez sobrepasada hace necesario hacer \textit{remeshing}.
+        }\end{enumerate}
+    \end{enumerate}
+
+    \DIFadd{El proceso de \textit{remeshing}, consiste en volver a la solución en el tiempo anterior, y realizar una interpolación $RBF$ en esta tal como si fuese una condición inicial. Luego se sigue evolucionando a partir de los valores de los parámetros que se obtengan en esta interpolación.
+}
+
+\footnotetext[1]{\DIFadd{El orden del término $1/\epsilon_{\text{min}}$ se supone cuadrático, debido a que el procedimiento seguido es análogo al de L. Rossi \cite{rossi}, sin embargo esto debe ser demostrado.}}
+
+
+\newpage
+\bibliography{ent3}
+\bibliographystyle{ieeetr} 
+\DIFaddend 
+
+\vfill\hfill RN/MV/\LaTeXe
+\end{document}
